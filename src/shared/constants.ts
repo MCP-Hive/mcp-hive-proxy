@@ -1,0 +1,15 @@
+// request related constants
+export const USER_AGENT = 'MCP-HUB/1.0'
+export const MCP_URL = 'https://mcphub.ai/mcp'
+export const MCP_LOCAL_URL = 'http://localhost:3000/mcp'
+export const MCP_DEMO_CREDENTIALS = '00000000-0000-0000-0000-000000000000'
+
+// request shape constants used by proxy
+export const METHOD_TOOLS_CALL = 'tools/call'
+export const METHOD_RESOURCES_READ = 'resources/read'
+export const METHOD_PROMPTS_GET = 'prompts/get'
+export const MCPHUB_SERVER = 'mcp-hive'
+export const MCPHUB_TOOL_LIST_TOOLS = 'listTools'
+export const MCPHUB_TOOL_LIST_RESOURCES = 'listResources'
+export const MCPHUB_TOOL_LIST_PROMPTS = 'listPrompts'
+export const MCPHUB_TOOL_DISCOVER_SERVERS = 'discoverServers'

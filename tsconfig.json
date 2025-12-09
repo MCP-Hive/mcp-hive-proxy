@@ -1,0 +1,43 @@
+{
+    // We are using the type-stripping features in recent NodeJS, which executes node directly
+    // on the typescript code, without building.
+    //
+    // So execution of typescript engine is just for type checking (!)
+
+    // Visit https://aka.ms/tsconfig to read more about this file
+    "include": ["src/**/*", "eslint.config.ts"],
+    "exclude": ["node_modules", "dist"],
+    "compilerOptions": {
+        // File Layout
+        "rootDir": "./",
+        "outDir": "./dist",
+
+        // Environment Settings
+        // See also https://aka.ms/tsconfig/module
+        "module": "nodenext",
+        "target": "esnext",
+        "types": [],
+
+        // Other Outputs
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+
+        // Stricter Typechecking Options
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+
+        // Recommended Options
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true,
+
+        // Used for node's internal type stripping
+        "allowImportingTsExtensions": true, // Import .ts files directly
+        "rewriteRelativeImportExtensions": true, // Convert .ts imports to .js in output
+        "erasableSyntaxOnly": true // Warns on unsupported TS features (like enums, namespaces, etc.)
+    }
+}

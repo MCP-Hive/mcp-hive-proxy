@@ -1,0 +1,42 @@
+{
+    "name": "@mcp-hive-proxy/proxy",
+    "version": "1.0.0",
+    "type": "module",
+    "bin": {
+        "mcp-hive-proxy": "./src/proxy/mcpHubProxy.ts"
+    },
+    "exports": {
+        ".": "./src/proxy/mcpHubProxy.ts",
+        "./types": "./src/shared/types/index.ts",
+        "./constants": "./src/shared/constants.ts",
+        "./logger": "./src/shared/logger.ts"
+    },
+    "engines": {
+        "node": ">=24.9.0 <25.0.0"
+    },
+    "scripts": {
+        "build": "prettier ./ --write && eslint && tsc --build tsconfig.json"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.18.2",
+        "winston": "^3.18.3",
+        "zod": "^3.25.76"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.36.0",
+        "@stylistic/eslint-plugin": "^5.4.0",
+        "@types/node": "^24.5.2",
+        "@typescript-eslint/eslint-plugin": "^8.45.0",
+        "@typescript-eslint/parser": "^8.45.0",
+        "eslint": "^9.36.0",
+        "jiti": "^2.6.1",
+        "prettier": "^3.6.2",
+        "typescript": "^5.9.2",
+        "typescript-eslint": "^8.44.1"
+    },
+    "prettier": {
+        "semi": false,
+        "singleQuote": true,
+        "tabWidth": 4
+    }
+}
