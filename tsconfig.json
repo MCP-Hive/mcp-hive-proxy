@@ -1,9 +1,4 @@
 {
-    // We are using the type-stripping features in recent NodeJS, which executes node directly
-    // on the typescript code, without building.
-    //
-    // So execution of typescript engine is just for type checking (!)
-
     // Visit https://aka.ms/tsconfig to read more about this file
     "include": ["src/**/*", "eslint.config.ts"],
     "exclude": ["node_modules", "dist"],

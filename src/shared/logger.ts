@@ -20,11 +20,12 @@ export class Logger {
             ),
             // use default Meta to indicate demo mode
             // defaultMeta: { service: 'user-service' },
-            transports: [
-                new winston.transports.File({
-                    filename: `/tmp/${loggerName}.log`,
-                }),
-            ],
+            // the following works on Unix systems only:
+            // transports: [
+            //     new winston.transports.File({
+            //         filename: `/tmp/${loggerName}.log`,
+            //     }),
+            // ],
         })
     }
 
