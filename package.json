@@ -2,6 +2,7 @@
     "name": "@mcp-hive-proxy/proxy",
     "version": "1.0.0",
     "type": "module",
+    "private": "false",
     "bin": {
         "mcp-hive-proxy": "./src/proxy/mcpHubProxy.ts"
     },
@@ -15,7 +16,8 @@
         "node": ">=24.9.0 <25.0.0"
     },
     "scripts": {
-        "build": "prettier ./ --write && eslint && tsc --build tsconfig.json"
+        "build": "prettier ./ --write && eslint && tsc --build tsconfig.json",
+        "test": "node --test \"tst/unit/**/*.test.ts\""
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.18.2",
