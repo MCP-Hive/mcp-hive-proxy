@@ -1,6 +1,6 @@
 {
     "name": "@mcp-hive-utils/proxy",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "module",
     "bin": {
         "mcp-hive-proxy": "./src/proxy/mcpHubProxy.ts"
@@ -12,7 +12,7 @@
         "./logger": "./src/shared/logger.ts"
     },
     "engines": {
-        "node": ">=24.9.0 <25.0.0"
+        "node": ">=22.0.0 <25.0.0"
     },
     "scripts": {
         "build": "prettier ./ --write && eslint && tsc --build tsconfig.json",
