@@ -1,6 +1,6 @@
 // request related constants
 export const USER_AGENT = 'MCP-HIVE/1.0'
-export const MCP_URL = 'https://mcp-hive.com/mcp'
+export const MCP_URL = 'https://hive.mcp-hive.com/mcp'
 export const MCP_LOCAL_URL = 'http://localhost:3000/mcp'
 export const MCP_DEMO_CREDENTIALS = '00000000-0000-0000-0000-000000000000'
 
