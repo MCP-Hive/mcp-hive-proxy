@@ -1,3 +1,5 @@
+import type { Tool } from './serverDescriptor.ts'
+
 export interface DiscoveryToolStats {
     toolName: string
     stats: {
@@ -22,11 +24,10 @@ export interface MCPServerDiscoveryResult {
     categories: string[]
     tags: string[]
     pricePerCall: number
-    toolCount: number
+    tools: Tool[]
     toolStats: DiscoveryToolStats[]
 }
 
 export interface MCPHiveDiscoveryDesc {
     servers: MCPServerDiscoveryResult[]
-    totalCount: number
 }
