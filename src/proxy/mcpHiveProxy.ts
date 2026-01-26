@@ -164,14 +164,38 @@ export class MCPHiveProxy {
             toolDesc.required_inputs,
         )
 
+        // Parse output schema if present
+        let outputSchema: z.ZodRawShape | undefined
+        if (toolDesc.output_schema) {
+            const unpackedOutputSchema: Record<string, unknown> = {}
+            for (const [k, v] of Object.entries(toolDesc.output_schema)) {
+                unpackedOutputSchema[k] = JSON.parse(v)
+            }
+            outputSchema = ZodHelpers.inferZodRawShapeFromSpec(
+                unpackedOutputSchema,
+                [], // no required fields for output schema
+            )
+        }
+
+        // Build config with optional outputSchema
+        const toolConfig: {
+            title: string
+            description: string
+            inputSchema: z.ZodRawShape
+            outputSchema?: z.ZodRawShape
+        } = {
+            title: toolDesc.name,
+            description: toolDesc.description,
+            inputSchema: toolArgs,
+        }
+        if (outputSchema) {
+            toolConfig.outputSchema = outputSchema
+        }
+
         // register DiscoverServers
         this.mcpServer.registerTool(
             toolDesc.name,
-            {
-                title: toolDesc.name,
-                description: toolDesc.description,
-                inputSchema: toolArgs,
-            },
+            toolConfig,
             async (input: { [x: string]: unknown }) => {
                 const result =
                     await MCPHiveProxyRequest.sendMCPHiveRequest<McpResult>(
@@ -265,6 +289,35 @@ export class MCPHiveProxy {
                 unpackedArgs,
                 toolDesc.required_inputs,
             )
+
+            // Parse output schema if present
+            let outputSchema: z.ZodRawShape | undefined
+            if (toolDesc.output_schema) {
+                const unpackedOutputSchema: Record<string, unknown> = {}
+                for (const [k, v] of Object.entries(toolDesc.output_schema)) {
+                    unpackedOutputSchema[k] = JSON.parse(v)
+                }
+                outputSchema = ZodHelpers.inferZodRawShapeFromSpec(
+                    unpackedOutputSchema,
+                    [], // no required fields for output schema
+                )
+            }
+
+            // Build config with optional outputSchema
+            const toolConfig: {
+                title: string
+                description: string
+                inputSchema: z.ZodRawShape
+                outputSchema?: z.ZodRawShape
+            } = {
+                title: toolDesc.name,
+                description: toolDesc.description,
+                inputSchema: toolArgs,
+            }
+            if (outputSchema) {
+                toolConfig.outputSchema = outputSchema
+            }
+
             Logger.debug(
                 `registration of tool ${toolDesc.name} with schema ${JSON.stringify(toolArgs)}`,
             )
@@ -272,11 +325,7 @@ export class MCPHiveProxy {
             // register this tool
             this.mcpServer.registerTool(
                 toolDesc.name,
-                {
-                    title: toolDesc.name,
-                    description: toolDesc.description,
-                    inputSchema: toolArgs,
-                },
+                toolConfig,
                 async (input: { [x: string]: unknown }, extra) => {
                     Logger.debug(
                         `tool ${toolDesc.name} invoked with input ${JSON.stringify(Object.entries(input))} extra ${JSON.stringify(Object.entries(extra))}`,

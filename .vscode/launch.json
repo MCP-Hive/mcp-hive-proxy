@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Proxy Gateway",
+            "program": "${workspaceFolder}/src/proxy/mcpHiveProxy.ts",
+            "args": [
+                // "--server",
+                // "airbnb",
+                "--gateway",
+                "--local",
+                "--credentials",
+                "00000000-0000-0000-0000-000000000000"
+            ],
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Proxy Production",
+            "program": "${workspaceFolder}/src/proxy/mcpHiveProxy.ts",
+            "args": [
+                "--gateway",
+                "--credentials",
+                "bd1ded66-6564-4d00-8cf6-21eb1f9d333f"
+            ],
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ]
+}

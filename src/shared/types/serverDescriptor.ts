@@ -36,6 +36,7 @@ export interface Tool {
     description: string
     input_schema: { [k: string]: string }
     required_inputs: string[]
+    output_schema?: { [k: string]: string }
 }
 
 export interface MCPHiveServerDesc {
