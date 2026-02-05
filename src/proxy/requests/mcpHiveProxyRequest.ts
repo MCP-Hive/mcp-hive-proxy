@@ -18,11 +18,11 @@ import { isMCPHivePromptsDesc } from '../../shared/types/promptDescriptor.ts'
 import { Logger } from '../../shared/logger.ts'
 
 /**
- * General tool for sending requests to MCP-HUB Server
+ * General tool for sending requests to MCP-HIVE Server
  */
 export class MCPHiveProxyRequest {
     /**
-     * send one request to the MCP-HUB server
+     * send one request to the MCP-HIVE server
      *
      * @param mcpServer name of server we are proxy'ing
      * @param method which method is being called
