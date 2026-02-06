@@ -16,7 +16,8 @@ export function createDescTypeGuard<T, Item>(
     return (obj: unknown): obj is T => {
         if (!obj || typeof obj !== 'object') return false
         const desc = obj as Record<string, unknown>
-        if (typeof desc.id !== 'string' || typeof desc.server !== 'string') return false
+        if (typeof desc.id !== 'string' || typeof desc.server !== 'string')
+            return false
         const arr = desc[arrayField]
         if (!Array.isArray(arr)) return false
         return arr.every(itemGuard)

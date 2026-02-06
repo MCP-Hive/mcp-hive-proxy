@@ -6,6 +6,8 @@ interface ProxyArgs {
     local: boolean
     credentials: string
     verbose: boolean
+    http: boolean
+    port: number
 }
 
 export class Utils {
@@ -47,6 +49,20 @@ export class Utils {
                     multiple: false,
                     default: false,
                 },
+
+                // HTTP mode
+                http: {
+                    type: 'boolean',
+                    multiple: false,
+                    default: false,
+                },
+
+                // HTTP server port
+                port: {
+                    type: 'string',
+                    multiple: false,
+                    default: '3000',
+                },
             },
             strict: true,
             allowPositionals: false,
@@ -61,6 +77,8 @@ export class Utils {
             local: values.local ?? false,
             credentials: values.credentials ?? '',
             verbose: values.verbose ?? false,
+            http: values.http ?? false,
+            port: parseInt(values.port ?? '3000', 10),
         }
     }
 

@@ -8,7 +8,12 @@ import {
     MCPHIVE_TOOL_LIST_PROMPTS,
 } from '../../shared/constants.ts'
 import { MCPHiveProxy } from '../mcpHiveProxy.ts'
-import type { RequestBody, RequestArgs, McpResult } from '../../shared/types/request.ts'
+import { getRequestContext } from '../context.ts'
+import type {
+    RequestBody,
+    RequestArgs,
+    McpResult,
+} from '../../shared/types/request.ts'
 import type { MCPHiveServerDesc } from '../../shared/types/serverDescriptor.ts'
 import { isMCPHiveServerDesc } from '../../shared/types/serverDescriptor.ts'
 import type { MCPHiveResourcesDesc } from '../../shared/types/resourceDescriptor.ts'
@@ -40,6 +45,11 @@ export class MCPHiveProxyRequest {
         // get the system config
         const mcpHiveProxyConfig = MCPHiveProxy.getInstance().config
 
+        // Get credentials from request context (HTTP mode) or fall back to config (stdio mode)
+        const requestContext = getRequestContext()
+        const credentials =
+            requestContext?.credentials || mcpHiveProxyConfig.credentials
+
         // call headers
         const headers = {
             'User-Agent': USER_AGENT,
@@ -49,7 +59,7 @@ export class MCPHiveProxyRequest {
         // request body, currently assuming that method is a tool call
         const body: RequestBody = {
             mcpServer,
-            credentials: mcpHiveProxyConfig.credentials,
+            credentials,
             request: {
                 id: crypto.randomInt(1, 2 ** 48),
                 method,

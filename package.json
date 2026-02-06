@@ -1,6 +1,6 @@
 {
     "name": "@mcp-hive-utils/proxy",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "license": "Apache-2.0",
     "type": "module",
     "bin": {
@@ -38,10 +38,12 @@
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.18.2",
+        "express": "^5.1.0",
         "winston": "^3.18.3",
         "zod": "^3.25.76"
     },
     "devDependencies": {
+        "@types/express": "^5.0.1",
         "@eslint/js": "^9.36.0",
         "@stylistic/eslint-plugin": "^5.4.0",
         "@types/node": "^24.5.2",

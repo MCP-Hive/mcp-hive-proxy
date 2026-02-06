@@ -8,6 +8,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { Logger } from '../shared/logger.ts'
 import { Utils } from '../shared/utils.ts'
 import { MCPHiveProxyRequest } from './requests/mcpHiveProxyRequest.ts'
+import { HttpServer } from './httpServer.ts'
 import {
     METHOD_TOOLS_CALL,
     METHOD_RESOURCES_READ,
@@ -129,7 +130,10 @@ export class MCPHiveProxy {
             for (const [k, v] of Object.entries(toolDesc.output_schema)) {
                 unpackedOutput[k] = JSON.parse(v)
             }
-            outputSchema = ZodHelpers.inferZodRawShapeFromSpec(unpackedOutput, [])
+            outputSchema = ZodHelpers.inferZodRawShapeFromSpec(
+                unpackedOutput,
+                [],
+            )
         }
 
         const config: {
@@ -191,7 +195,8 @@ export class MCPHiveProxy {
         // Register the Gateway tools:
         // Fetch the mcp-hive tool "DiscoverServers". This fetch also acts as a basic handshake
         // to confirm connectivity
-        const MCPHiveServerDesc = await MCPHiveProxyRequest.listTools(MCPHIVE_SERVER)
+        const MCPHiveServerDesc =
+            await MCPHiveProxyRequest.listTools(MCPHIVE_SERVER)
         const toolDesc = MCPHiveServerDesc.tools.find(
             (tool) => MCPHIVE_TOOL_DISCOVER_SERVERS === tool.name,
         )!
@@ -280,7 +285,8 @@ export class MCPHiveProxy {
         Logger.debug(`Initializing in Proxy mode for server: ${serverName}`)
 
         // collect and register tools
-        const MCPHiveServerDesc = await MCPHiveProxyRequest.listTools(serverName)
+        const MCPHiveServerDesc =
+            await MCPHiveProxyRequest.listTools(serverName)
         for (const toolDesc of MCPHiveServerDesc.tools) {
             const toolConfig = this.parseToolDesc(toolDesc)
 
@@ -406,7 +412,8 @@ export class MCPHiveProxy {
 
         // collect and register prompts
         try {
-            const MCPHivePromptsDesc = await MCPHiveProxyRequest.listPrompts(serverName)
+            const MCPHivePromptsDesc =
+                await MCPHiveProxyRequest.listPrompts(serverName)
             const promptCount = MCPHivePromptsDesc.prompts.length
             Logger.debug(`Registering ${promptCount} prompts`)
 
@@ -568,11 +575,28 @@ export class MCPHiveProxy {
     }
 
     /**
-     * Start the proxy networking
+     * Get the MCP server instance (used by HTTP server for per-request transports)
      */
-    public async run(): Promise<void> {
-        const transport = new StdioServerTransport()
-        await this.mcpServer.connect(transport)
+    public getMcpServer(): McpServer {
+        return this.mcpServer
+    }
+
+    /**
+     * Start the proxy networking
+     * @param httpMode - If true, start HTTP server instead of stdio transport
+     * @param port - Port for HTTP server (default: 3000)
+     */
+    public async run(
+        httpMode: boolean = false,
+        port: number = 3000,
+    ): Promise<void> {
+        if (httpMode) {
+            const httpServer = new HttpServer(this.mcpServer, port)
+            httpServer.start()
+        } else {
+            const transport = new StdioServerTransport()
+            await this.mcpServer.connect(transport)
+        }
     }
 }
 
@@ -587,5 +611,5 @@ Utils.main(import.meta.filename, 'mcp-hive-proxy', async () => {
         args.verbose,
         args.gateway,
     )
-    await mcpHiveProxy.run()
+    await mcpHiveProxy.run(args.http, args.port)
 })

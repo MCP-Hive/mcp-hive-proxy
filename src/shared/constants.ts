@@ -4,6 +4,10 @@ export const MCP_URL = 'https://hive.mcp-hive.com/mcp'
 export const MCP_LOCAL_URL = 'http://localhost:3000/mcp'
 export const MCP_DEMO_CREDENTIALS = '00000000-0000-0000-0000-000000000000'
 
+// URL for the hosted HTTP proxy endpoint (self-reference for documentation/logging)
+export const MCP_HOSTED_PROXY_URL =
+    process.env.MCP_HOSTED_PROXY_URL || 'https://proxy.mcp-hive.com/mcp'
+
 // request shape constants used by proxy
 export const METHOD_TOOLS_CALL = 'tools/call'
 export const METHOD_RESOURCES_READ = 'resources/read'
