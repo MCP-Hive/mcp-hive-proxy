@@ -30,6 +30,17 @@
                 "bd1ded66-6564-4d00-8cf6-21eb1f9d333f"
             ],
             "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Proxy HTTP",
+            "program": "${workspaceFolder}/src/proxy/mcpHiveProxy.ts",
+            "args": ["--gateway", "--http"],
+            "env": {
+                "MCP_BOOTSTRAP_CREDENTIALS": "aca828c8-98cc-45e0-b8bf-40def169124f"
+            },
+            "skipFiles": ["<node_internals>/**"]
         }
     ]
 }

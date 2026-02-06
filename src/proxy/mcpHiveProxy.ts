@@ -9,6 +9,7 @@ import { Logger } from '../shared/logger.ts'
 import { Utils } from '../shared/utils.ts'
 import { MCPHiveProxyRequest } from './requests/mcpHiveProxyRequest.ts'
 import { HttpServer } from './httpServer.ts'
+import { runWithContext } from './context.ts'
 import {
     METHOD_TOOLS_CALL,
     METHOD_RESOURCES_READ,
@@ -19,6 +20,7 @@ import {
     MCPHIVE_SERVER,
     MCPHIVE_TOOL_DISCOVER_SERVERS,
     MCPHIVE_TOOL_CALL_SERVER,
+    MCP_BOOTSTRAP_CREDENTIALS,
 } from '../shared/constants.ts'
 import type {
     McpResult,
@@ -194,9 +196,12 @@ export class MCPHiveProxy {
 
         // Register the Gateway tools:
         // Fetch the mcp-hive tool "DiscoverServers". This fetch also acts as a basic handshake
-        // to confirm connectivity
-        const MCPHiveServerDesc =
-            await MCPHiveProxyRequest.listTools(MCPHIVE_SERVER)
+        // to confirm connectivity.
+        // Use bootstrap credentials for this initialization call (no user context yet)
+        const MCPHiveServerDesc = await runWithContext(
+            { credentials: MCP_BOOTSTRAP_CREDENTIALS },
+            () => MCPHiveProxyRequest.listTools(MCPHIVE_SERVER),
+        )
         const toolDesc = MCPHiveServerDesc.tools.find(
             (tool) => MCPHIVE_TOOL_DISCOVER_SERVERS === tool.name,
         )!

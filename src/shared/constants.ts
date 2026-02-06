@@ -8,6 +8,11 @@ export const MCP_DEMO_CREDENTIALS = '00000000-0000-0000-0000-000000000000'
 export const MCP_HOSTED_PROXY_URL =
     process.env.MCP_HOSTED_PROXY_URL || 'https://proxy.mcp-hive.com/mcp'
 
+// Bootstrap credentials for server initialization (fetching tool schemas)
+// These are internal credentials, never exposed to clients
+export const MCP_BOOTSTRAP_CREDENTIALS =
+    process.env.MCP_BOOTSTRAP_CREDENTIALS || ''
+
 // request shape constants used by proxy
 export const METHOD_TOOLS_CALL = 'tools/call'
 export const METHOD_RESOURCES_READ = 'resources/read'
