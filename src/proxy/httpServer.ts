@@ -1,7 +1,12 @@
 import http from 'http'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { runWithContext } from './context.ts'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * HTTP Server for MCP Hive Proxy.
@@ -78,6 +83,30 @@ export class HttpServer {
     }
 
     /**
+     * Serve the server-card.json file for Smithery discovery
+     */
+    private serveServerCard(res: http.ServerResponse): void {
+        // server-card.json is at the project root, two levels up from dist/src/proxy
+        const serverCardPath = path.resolve(
+            __dirname,
+            '../../..',
+            'server-card.json',
+        )
+
+        try {
+            const content = fs.readFileSync(serverCardPath, 'utf-8')
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(content),
+                'Cache-Control': 'public, max-age=3600',
+            })
+            res.end(content)
+        } catch {
+            this.sendJson(res, 404, { error: 'Server card not found' })
+        }
+    }
+
+    /**
      * Handle incoming HTTP request
      */
     private async handleRequest(
@@ -95,6 +124,15 @@ export class HttpServer {
         // MCP protocol endpoint
         if (url === '/mcp' && req.method === 'POST') {
             await this.handleMcpRequest(req, res)
+            return
+        }
+
+        // Server card endpoint for Smithery discovery
+        if (
+            url === '/.well-known/mcp/server-card.json' &&
+            req.method === 'GET'
+        ) {
+            this.serveServerCard(res)
             return
         }
 

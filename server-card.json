@@ -1,0 +1,62 @@
+{
+    "serverInfo": {
+        "name": "MCP-Hive Proxy",
+        "version": "1.0.14"
+    },
+    "authentication": {
+        "required": true,
+        "schemes": ["bearer"]
+    },
+    "tools": [
+        {
+            "name": "discoverServers",
+            "description": "Discover additional MCP Servers which can be invoked through this gateway. Collect their tool-set, pricing, and statistics. Supports listing all servers, filtering by category, or searching by keyword.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "string",
+                        "enum": ["list", "category", "keyword"],
+                        "description": "Discovery mode: list (all servers), category (filter by category), keyword (search)"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Category to filter by (required when mode=category)"
+                    },
+                    "keyword": {
+                        "type": "string",
+                        "description": "Keyword to search for (required when mode=keyword)"
+                    },
+                    "includeInactive": {
+                        "type": "boolean",
+                        "description": "Include inactive servers (default: false)"
+                    }
+                }
+            }
+        },
+        {
+            "name": "callServer",
+            "description": "Call any MCP server's tool through the gateway. Enables dynamic access to any server's functionality by specifying the server name, tool name, and arguments.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "server": {
+                        "type": "string",
+                        "description": "MCP server name"
+                    },
+                    "tool": {
+                        "type": "string",
+                        "description": "Tool name to invoke"
+                    },
+                    "args": {
+                        "type": "object",
+                        "description": "Tool arguments"
+                    }
+                },
+                "required": ["server", "tool", "args"]
+            }
+        }
+    ],
+    "resources": [],
+    "prompts": []
+}
