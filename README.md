@@ -33,5 +33,7 @@ In gateway mode:
 | -------------------- | --------------------------------------------------- |
 | `--server <name>`    | Proxy a specific MCP server (omit for gateway mode) |
 | `--gateway`          | Explicitly enable gateway mode                      |
+| `--http`             | Run the proxy in HTTP transport                     |
+| `--port <port_num>`  | Port number to be used if HTTP-transport            |
 | `--credentials <id>` | Consumer credentials for authentication             |
 | `--verbose`          | Enable verbose logging                              |
