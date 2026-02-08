@@ -230,6 +230,19 @@ export class MCPHiveProxy {
                         result?.structuredContent as MCPHiveDiscoveryDesc
                 }
 
+                if (result?.isError) {
+                    return {
+                        content: [
+                            {
+                                type: 'text',
+                                text: `Error ${result?.status || 500}: ${result?.statusText || 'Unknown Error'}`,
+                            },
+                            ...content, // Include any additional error details from the remote
+                        ],
+                        isError: true,
+                    } as CallToolResult
+                }
+
                 return {
                     content,
                     isError: result?.isError,

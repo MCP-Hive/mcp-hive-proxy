@@ -77,9 +77,6 @@ export class MCPHiveProxyRequest {
                 body: JSON.stringify(body),
                 method: 'POST',
             })
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
             return (await response.json()) as T
         } catch (error) {
             if (error instanceof TypeError) {

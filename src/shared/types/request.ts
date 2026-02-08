@@ -30,6 +30,8 @@ export interface McpResultContentEntry {
 
 export interface McpResult {
     isError?: boolean
+    status?: number
+    statusText?: string
     content: McpResultContentEntry[]
     structuredContent?: object
 }

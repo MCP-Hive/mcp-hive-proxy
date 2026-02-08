@@ -2,6 +2,8 @@
 
 This is the MCP-Hive Proxy. It can be loaded by any agentic host in order to access MCP-Hive and is a gateway to other MCP servers. To obtain credentials, and read further documentation, go to [mcp-hive.com](https://mcp-hive.com)
 
+[![smithery badge](https://smithery.ai/badge/mcp-hive/hive-servers)](https://smithery.ai/server/mcp-hive/hive-servers)
+
 ## Running
 
 The proxy can run in two modes:
