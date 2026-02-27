@@ -114,13 +114,13 @@ export class ZodHelpers {
             // Check if this is a record type (additionalProperties without properties)
             if (
                 o.additionalProperties &&
-                typeof o.additionalProperties === 'object' &&
                 (!o.properties || Object.keys(o.properties).length === 0)
             ) {
-                // This is a record type: Record<string, ValueType>
-                const valueSchema = ZodHelpers.scanObject(
-                    o.additionalProperties,
-                )
+                // Determine value schema: typed additionalProperties or unknown
+                const valueSchema =
+                    typeof o.additionalProperties === 'object'
+                        ? ZodHelpers.scanObject(o.additionalProperties)
+                        : z.unknown()
                 let recordSchema: z.ZodTypeAny = z.record(
                     z.string(),
                     valueSchema,
@@ -139,7 +139,9 @@ export class ZodHelpers {
                 shape[k] = ZodHelpers.scanObject(v)
             }
 
-            let objectSchema: z.ZodTypeAny = z.object(shape)
+            let objectSchema: z.ZodTypeAny = o.additionalProperties
+                ? z.object(shape).passthrough()
+                : z.object(shape)
 
             // Apply nullable if specified
             if (o.nullable) {
