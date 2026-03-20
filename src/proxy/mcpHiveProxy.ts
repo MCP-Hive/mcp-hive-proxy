@@ -268,7 +268,7 @@ export class MCPHiveProxy {
             {
                 title: MCPHIVE_TOOL_CALL_SERVER,
                 description:
-                    'Discover additional MCP Servers which can be invoked through this gateway. Collect their tool-set, pricing, and statistics. Supports listing all servers, filtering by category, or searching by keyword.',
+                    'Make a call to one of the MCP Servers which can be invoked through this gateway.',
                 inputSchema: shape,
             },
             async (input: { [x: string]: unknown }) => {
