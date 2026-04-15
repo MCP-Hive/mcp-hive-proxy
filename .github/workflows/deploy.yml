@@ -1,52 +1,52 @@
 name: Build and Deploy to AppRunner
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REPO_STAGING: mcp-proxy-staging
-  ECR_REPO_PROD: mcp-proxy-prod
+    AWS_REGION: us-east-1
+    ECR_REPO_STAGING: mcp-proxy-staging
+    ECR_REPO_PROD: mcp-proxy-prod
 
 permissions:
-  id-token: write
-  contents: read
+    id-token: write
+    contents: read
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [staging, prod]
-    environment: ${{ matrix.environment }}
+    build-and-push:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                environment: [staging, prod]
+        environment: ${{ matrix.environment }}
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.DEPLOY_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+            - name: Configure AWS credentials via OIDC
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ vars.DEPLOY_ROLE_ARN }}
+                  aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
+            - name: Login to Amazon ECR
+              id: ecr-login
+              uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image
-        env:
-          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          REPOSITORY: ${{ matrix.environment == 'prod' && env.ECR_REPO_PROD || env.ECR_REPO_STAGING }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker push $REGISTRY/$REPOSITORY:latest
+            - name: Build, tag, and push image
+              env:
+                  REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+                  REPOSITORY: ${{ matrix.environment == 'prod' && env.ECR_REPO_PROD || env.ECR_REPO_STAGING }}
+                  IMAGE_TAG: ${{ github.sha }}
+              run: |
+                  docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
+                  docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+                  docker push $REGISTRY/$REPOSITORY:latest
 
-      - name: Deploy to AppRunner
-        env:
-          SERVICE_NAME: mcp-proxy-${{ matrix.environment }}
-        run: |
-          SERVICE_ARN=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='${SERVICE_NAME}'].ServiceArn" --output text)
-          aws apprunner start-deployment --service-arn "$SERVICE_ARN"
+            - name: Deploy to AppRunner
+              env:
+                  SERVICE_NAME: mcp-proxy-${{ matrix.environment }}
+              run: |
+                  SERVICE_ARN=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='${SERVICE_NAME}'].ServiceArn" --output text)
+                  aws apprunner start-deployment --service-arn "$SERVICE_ARN"

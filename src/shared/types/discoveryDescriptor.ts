@@ -24,6 +24,7 @@ export interface MCPServerDiscoveryResult {
     categories: string[]
     tags: string[]
     pricePerCall: number
+    verified?: boolean
     tools: Tool[]
     toolStats: DiscoveryToolStats[]
 }
