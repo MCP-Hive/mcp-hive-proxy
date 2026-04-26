@@ -20,6 +20,8 @@ import {
     MCPHIVE_SERVER,
     MCPHIVE_TOOL_DISCOVER_SERVERS,
     MCPHIVE_TOOL_CALL_SERVER,
+    MCPHIVE_TOOL_DISCOVER_ARTICLES,
+    MCPHIVE_TOOL_GET_ARTICLE,
     MCP_BOOTSTRAP_CREDENTIALS,
 } from '../shared/constants.ts'
 import type {
@@ -294,6 +296,73 @@ export class MCPHiveProxy {
                 } as CallToolResult
             },
         )
+
+        // register discoverArticles
+        const discoverArticlesDesc = MCPHiveServerDesc.tools.find(
+            (tool) => MCPHIVE_TOOL_DISCOVER_ARTICLES === tool.name,
+        )
+        if (discoverArticlesDesc) {
+            const discoverArticlesConfig =
+                this.parseToolDesc(discoverArticlesDesc)
+            this.mcpServer.registerTool(
+                discoverArticlesDesc.name,
+                discoverArticlesConfig,
+                async (input: { [x: string]: unknown }) => {
+                    const result =
+                        await MCPHiveProxyRequest.sendMCPHiveRequest<McpResult>(
+                            MCPHIVE_SERVER,
+                            METHOD_TOOLS_CALL,
+                            discoverArticlesDesc.name,
+                            input,
+                        )
+
+                    const content = (result?.content || []).map((entry) =>
+                        this.convertToSDKContent(entry),
+                    )
+
+                    return {
+                        content,
+                        isError: result?.isError,
+                        structuredContent: result?.structuredContent as
+                            | { [x: string]: unknown }
+                            | undefined,
+                    } as CallToolResult
+                },
+            )
+        }
+
+        // register getArticle
+        const getArticleDesc = MCPHiveServerDesc.tools.find(
+            (tool) => MCPHIVE_TOOL_GET_ARTICLE === tool.name,
+        )
+        if (getArticleDesc) {
+            const getArticleConfig = this.parseToolDesc(getArticleDesc)
+            this.mcpServer.registerTool(
+                getArticleDesc.name,
+                getArticleConfig,
+                async (input: { [x: string]: unknown }) => {
+                    const result =
+                        await MCPHiveProxyRequest.sendMCPHiveRequest<McpResult>(
+                            MCPHIVE_SERVER,
+                            METHOD_TOOLS_CALL,
+                            getArticleDesc.name,
+                            input,
+                        )
+
+                    const content = (result?.content || []).map((entry) =>
+                        this.convertToSDKContent(entry),
+                    )
+
+                    return {
+                        content,
+                        isError: result?.isError,
+                        structuredContent: result?.structuredContent as
+                            | { [x: string]: unknown }
+                            | undefined,
+                    } as CallToolResult
+                },
+            )
+        }
     }
 
     /**
