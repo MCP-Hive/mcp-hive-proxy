@@ -1,6 +1,6 @@
 {
     "name": "@mcp-hive-utils/proxy",
-    "version": "1.0.18",
+    "version": "1.0.19",
     "mcpName": "io.github.MCP-Hive/mcp-hive-proxy",
     "license": "Apache-2.0",
     "type": "module",
