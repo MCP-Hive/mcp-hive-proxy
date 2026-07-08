@@ -111,7 +111,7 @@ export interface GetToolsRequestArgs extends RequestArgs {
 }
 
 export interface DiscoverServersRequestArgs extends RequestArgs {
-    mode: 'list' | 'category' | 'keyword' | 'prompt'
+    mode: 'category' | 'keyword' | 'prompt'
     category?: string
     keyword?: string
     // mode='prompt' (ServerToolDiscovery): free-text task description; returns
