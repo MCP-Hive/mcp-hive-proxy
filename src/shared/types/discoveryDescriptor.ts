@@ -29,6 +29,22 @@ export interface MCPServerDiscoveryResult {
     toolStats: DiscoveryToolStats[]
 }
 
+/**
+ * A single relevance-ranked (server, tool) result from ServerToolDiscovery
+ * (discoverServers mode='prompt'). Highest `score` first.
+ */
+export interface DiscoveryRankedTool {
+    serverId: string
+    serverName: string
+    toolName: string
+    toolDescription: string
+    score: number
+}
+
 export interface MCPHiveDiscoveryDesc {
     servers: MCPServerDiscoveryResult[]
+    // Populated only for mode='prompt': tools ranked by relevance to the prompt.
+    // `servers` carries the supporting detail (pricing, stats, full schema) for
+    // the providers that own these tools.
+    rankedTools?: DiscoveryRankedTool[]
 }

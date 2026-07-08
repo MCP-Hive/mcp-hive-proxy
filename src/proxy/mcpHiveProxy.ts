@@ -89,13 +89,6 @@ export class MCPHiveProxy {
             },
             {
                 capabilities: {
-                    resources: {
-                        subscribe: true,
-                        listChanged: true,
-                    },
-                    prompts: {
-                        listChanged: true,
-                    },
                     tools: {},
                 },
             },

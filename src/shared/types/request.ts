@@ -111,9 +111,13 @@ export interface GetToolsRequestArgs extends RequestArgs {
 }
 
 export interface DiscoverServersRequestArgs extends RequestArgs {
-    mode: 'list' | 'category' | 'keyword'
+    mode: 'list' | 'category' | 'keyword' | 'prompt'
     category?: string
     keyword?: string
+    // mode='prompt' (ServerToolDiscovery): free-text task description; returns
+    // tools ranked by relevance. `k` caps how many ranked tools are returned.
+    prompt?: string
+    k?: number
 }
 
 // Type guard function
