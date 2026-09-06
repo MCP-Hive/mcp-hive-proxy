@@ -1,4 +1,4 @@
-name: Build and Deploy to AppRunner
+name: Build and Deploy to ECS
 
 on:
     push:
@@ -44,9 +44,16 @@ jobs:
                   docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
                   docker push $REGISTRY/$REPOSITORY:latest
 
-            - name: Deploy to AppRunner
+            - name: Deploy to ECS
               env:
+                  CLUSTER_NAME: mcp-hive-${{ matrix.environment }}
                   SERVICE_NAME: mcp-proxy-${{ matrix.environment }}
               run: |
-                  SERVICE_ARN=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='${SERVICE_NAME}'].ServiceArn" --output text)
-                  aws apprunner start-deployment --service-arn "$SERVICE_ARN"
+                  aws ecs update-service \
+                      --cluster "$CLUSTER_NAME" \
+                      --service "$SERVICE_NAME" \
+                      --force-new-deployment \
+                      --no-cli-pager --query 'service.serviceName' --output text
+                  aws ecs wait services-stable \
+                      --cluster "$CLUSTER_NAME" \
+                      --services "$SERVICE_NAME"
