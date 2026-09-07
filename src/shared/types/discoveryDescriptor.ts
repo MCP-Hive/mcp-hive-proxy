@@ -1,5 +1,10 @@
 import type { Tool } from './serverDescriptor.ts'
 
+/**
+ * @deprecated Shape of the removed `mode=category`/`mode=keyword` responses.
+ * `discoverServers` returns {@link MCPHiveDiscoveryDesc} — a `rankedActions`
+ * list — and never this. Retained only so existing compiles do not break.
+ */
 export interface DiscoveryToolStats {
     toolName: string
     stats: {
@@ -17,6 +22,10 @@ export interface DiscoveryToolStats {
     timestamp: string
 }
 
+/**
+ * @deprecated Shape of the removed `mode=category`/`mode=keyword` responses.
+ * See {@link DiscoveryToolStats}.
+ */
 export interface MCPServerDiscoveryResult {
     id: string
     name: string
@@ -30,21 +39,45 @@ export interface MCPServerDiscoveryResult {
 }
 
 /**
- * A single relevance-ranked (server, tool) result from ServerToolDiscovery
- * (discoverServers mode='prompt'). Highest `score` first.
+ * One ready-to-invoke action from `discoverServers`, shaped to feed `callServer`
+ * directly: pass `server`, `tool` and `args` straight through.
+ *
+ * Mirrors `MCPServerAction` in the hub (src/discovery/types.ts). Highest `score`
+ * first, though `score` is lane-relative and is not comparable between tool
+ * actions and article actions.
  */
-export interface DiscoveryRankedTool {
-    serverId: string
-    serverName: string
-    toolName: string
-    toolDescription: string
+export interface MCPServerAction {
+    /** Provider name — `callServer`'s `server`. */
+    server: string
+    /** Tool name — `callServer`'s `tool`. */
+    tool: string
+    /** Pre-bound args (e.g. `{ url }` for an article); `{}` when the caller fills them. */
+    args: Record<string, unknown>
+    /** Full tool definition, so the caller can complete `args`. */
+    toolSchema: Tool
+    /** Cost to invoke, in USD. */
+    pricePerCall: number
+    verified: boolean
     score: number
+    /** Why a tool the prompt could not have named was surfaced. */
+    bridgeReason?: string
+    /** Observed quality, when the analyzer has measured this tool. */
+    stats?: {
+        calls: number
+        latencyP90Usec: number
+        /** Ratio, 0-1. */
+        errors: number
+    }
+    /** Present for article actions: human-facing metadata. */
+    display?: {
+        title: string
+        publisher: string
+        author?: string
+        publishedDate?: string
+    }
 }
 
+/** The `discoverServers` response. One mode, one shape. */
 export interface MCPHiveDiscoveryDesc {
-    servers: MCPServerDiscoveryResult[]
-    // Populated only for mode='prompt': tools ranked by relevance to the prompt.
-    // `servers` carries the supporting detail (pricing, stats, full schema) for
-    // the providers that own these tools.
-    rankedTools?: DiscoveryRankedTool[]
+    rankedActions: MCPServerAction[]
 }

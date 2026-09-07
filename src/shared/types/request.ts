@@ -111,13 +111,19 @@ export interface GetToolsRequestArgs extends RequestArgs {
 }
 
 export interface DiscoverServersRequestArgs extends RequestArgs {
-    mode: 'category' | 'keyword' | 'prompt'
-    category?: string
-    keyword?: string
-    // mode='prompt' (ServerToolDiscovery): free-text task description; returns
-    // tools ranked by relevance. `k` caps how many ranked tools are returned.
-    prompt?: string
+    // Free-text task description. Returns ready-to-invoke actions ranked by
+    // relevance; `k`/`kTools` cap the tool lane and `kArticles` the content lane.
+    //
+    // The `category` and `keyword` modes were removed: keyword's job — finding a
+    // provider by name — is already done by the lexical arm of prompt
+    // retrieval, which up-weights the provider name.
+    prompt: string
+    // Optional and only ever 'prompt'. Retained so callers that still send it
+    // type-check; the hub rejects any other value.
+    mode?: 'prompt'
     k?: number
+    kTools?: number
+    kArticles?: number
 }
 
 // Type guard function

@@ -10,7 +10,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * HTTP Server for MCP Hive Proxy.
- * Provides stateless Streamable HTTP transport for AppRunner deployment.
+ * Provides stateless Streamable HTTP transport, so any task can serve any
+ * request and no session affinity is needed behind a load balancer.
  */
 export class HttpServer {
     private server: http.Server

@@ -1,7 +1,7 @@
 {
     "serverInfo": {
         "name": "MCP-Hive Proxy",
-        "version": "1.0.14"
+        "version": "1.0.19"
     },
     "authentication": {
         "required": true,
@@ -10,26 +10,22 @@
     "tools": [
         {
             "name": "discoverServers",
-            "description": "Discover additional MCP Servers which can be invoked through this gateway. Collect their tool-set, pricing, and statistics. Supports listing all servers, filtering by category, or searching by keyword.",
+            "description": "Discover tools and articles which can be invoked through this gateway. Describe the task you are working on in natural language; returns a ranked list of ready-to-invoke actions, each with its tool schema, price and quality statistics, ready to pass to callServer.",
             "inputSchema": {
                 "type": "object",
+                "required": ["prompt"],
                 "properties": {
-                    "mode": {
+                    "prompt": {
                         "type": "string",
-                        "enum": ["list", "category", "keyword"],
-                        "description": "Discovery mode: list (all servers), category (filter by category), keyword (search)"
+                        "description": "Natural-language description of the task you are working on. Returns the most relevant actions ranked by relevance."
                     },
-                    "category": {
-                        "type": "string",
-                        "description": "Category to filter by (required when mode=category)"
+                    "k": {
+                        "type": "number",
+                        "description": "Maximum number of ranked tools to return (default 25)"
                     },
-                    "keyword": {
-                        "type": "string",
-                        "description": "Keyword to search for (required when mode=keyword)"
-                    },
-                    "includeInactive": {
-                        "type": "boolean",
-                        "description": "Include inactive servers (default: false)"
+                    "kArticles": {
+                        "type": "number",
+                        "description": "Maximum number of article actions to return (default 5)"
                     }
                 }
             }
