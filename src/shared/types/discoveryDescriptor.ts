@@ -53,6 +53,16 @@ export interface MCPServerAction {
     tool: string
     /** Pre-bound args (e.g. `{ url }` for an article); `{}` when the caller fills them. */
     args: Record<string, unknown>
+    /**
+     * The assembled invocation — pass straight to `callServer`, copying `args`
+     * verbatim. Duplicates `server`/`tool`/`args` so the call never has to be
+     * reconstructed from the entry's other fields.
+     */
+    callServer: {
+        server: string
+        tool: string
+        args: Record<string, unknown>
+    }
     /** Full tool definition, so the caller can complete `args`. */
     toolSchema: Tool
     /** Cost to invoke, in USD. */
@@ -79,5 +89,11 @@ export interface MCPServerAction {
 
 /** The `discoverServers` response. One mode, one shape. */
 export interface MCPHiveDiscoveryDesc {
+    /**
+     * How to invoke the entries below. Carried in `structuredContent` because a
+     * client holding both channels forwards the structured payload and drops
+     * the text one.
+     */
+    usage: string
     rankedActions: MCPServerAction[]
 }

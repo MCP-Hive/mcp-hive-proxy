@@ -38,7 +38,6 @@ import type {
     EmbeddedResource,
     ResourceLink,
 } from '@modelcontextprotocol/sdk/types.js'
-import type { MCPHiveDiscoveryDesc } from '../shared/types/discoveryDescriptor.ts'
 import type { Tool } from '../shared/types/serverDescriptor.ts'
 
 // the configuration of an MCPHive proxy
@@ -215,34 +214,7 @@ export class MCPHiveProxy {
                         input,
                     )
 
-                const content = (result?.content || []).map((entry) =>
-                    this.convertToSDKContent(entry),
-                )
-
-                let structuredContent: MCPHiveDiscoveryDesc | undefined
-                if (result?.structuredContent) {
-                    structuredContent =
-                        result?.structuredContent as MCPHiveDiscoveryDesc
-                }
-
-                if (result?.isError) {
-                    return {
-                        content: [
-                            {
-                                type: 'text',
-                                text: `Error ${result?.status || 500}: ${result?.statusText || 'Unknown Error'}`,
-                            },
-                            ...content, // Include any additional error details from the remote
-                        ],
-                        isError: true,
-                    } as CallToolResult
-                }
-
-                return {
-                    content,
-                    isError: result?.isError,
-                    structuredContent,
-                } as CallToolResult
+                return this.toCallToolResult(result)
             },
         )
 
@@ -276,17 +248,7 @@ export class MCPHiveProxy {
                         callToolDesc.args,
                     )
 
-                const content = (result?.content || []).map((entry) =>
-                    this.convertToSDKContent(entry),
-                )
-
-                return {
-                    content,
-                    isError: result?.isError,
-                    structuredContent: result?.structuredContent as
-                        | { [x: string]: unknown }
-                        | undefined,
-                } as CallToolResult
+                return this.toCallToolResult(result)
             },
         )
 
@@ -309,17 +271,7 @@ export class MCPHiveProxy {
                             input,
                         )
 
-                    const content = (result?.content || []).map((entry) =>
-                        this.convertToSDKContent(entry),
-                    )
-
-                    return {
-                        content,
-                        isError: result?.isError,
-                        structuredContent: result?.structuredContent as
-                            | { [x: string]: unknown }
-                            | undefined,
-                    } as CallToolResult
+                    return this.toCallToolResult(result)
                 },
             )
         }
@@ -342,17 +294,7 @@ export class MCPHiveProxy {
                             input,
                         )
 
-                    const content = (result?.content || []).map((entry) =>
-                        this.convertToSDKContent(entry),
-                    )
-
-                    return {
-                        content,
-                        isError: result?.isError,
-                        structuredContent: result?.structuredContent as
-                            | { [x: string]: unknown }
-                            | undefined,
-                    } as CallToolResult
+                    return this.toCallToolResult(result)
                 },
             )
         }
@@ -396,22 +338,7 @@ export class MCPHiveProxy {
                         `tool ${toolDesc.name} returned with output ${JSON.stringify(result)}`,
                     )
 
-                    // Convert McpResult to CallToolResult format
-                    // McpResult.content contains McpResultContentEntry[] which may include
-                    // text, image, audio, resource, resource_link types
-                    const content = (result?.content || []).map((entry) =>
-                        this.convertToSDKContent(entry),
-                    )
-
-                    const callToolResult: CallToolResult = {
-                        content,
-                        isError: result?.isError,
-                        structuredContent: result?.structuredContent as
-                            | { [x: string]: unknown }
-                            | undefined,
-                    }
-
-                    return callToolResult
+                    return this.toCallToolResult(result)
                 },
             )
         }
@@ -573,6 +500,75 @@ export class MCPHiveProxy {
             )
             // Continue execution - prompts are optional
         }
+    }
+
+    /**
+     * Convert an MCP-Hive response into the SDK's CallToolResult.
+     *
+     * The gateway reports failures as `{isError, status, statusText}` with no
+     * `content` array, so mapping the response field-by-field produced a result
+     * that was flagged as an error but carried nothing that said why. Callers
+     * saw an empty response and could not tell a bad argument from a dead
+     * provider — in one live session that turned five recoverable mistakes into
+     * five silent failures. `statusText` becomes a text block here.
+     *
+     * `structuredContent` is deliberately omitted on the error path: a client
+     * that receives both forwards only the structured payload to the model and
+     * drops the text, which would delete the explanation a second time.
+     */
+    private toCallToolResult(result: McpResult | null): CallToolResult {
+        if (!result) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Error: no response from MCP-Hive. The gateway could not be reached; the call was not billed.',
+                    },
+                ],
+                isError: true,
+            } as CallToolResult
+        }
+
+        const content = (result.content || []).map((entry) =>
+            this.convertToSDKContent(entry),
+        )
+
+        if (result.isError) {
+            // Two different failures arrive on this path. A provider's own tool
+            // error, and the gateway's "temporarily unavailable", both carry
+            // content that already explains itself — pass those through
+            // untouched rather than prefixing a second, vaguer sentence.
+            //
+            // A gateway *rejection* (bad arguments, unknown server, expired
+            // credentials) carries `{status, statusText}` and no content at
+            // all. That is the case this exists for: it used to arrive as an
+            // error flag with an empty body, so the caller could not tell a
+            // fixable argument from a dead provider.
+            if (content.length > 0) {
+                return { content, isError: true } as CallToolResult
+            }
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text:
+                            result.status !== undefined ||
+                            result.statusText !== undefined
+                                ? `Error ${result.status || 500}: ${result.statusText || 'Unknown Error'}`
+                                : 'Error: the call failed and the server returned no detail.',
+                    },
+                ],
+                isError: true,
+            } as CallToolResult
+        }
+
+        return {
+            content,
+            isError: false,
+            structuredContent: result.structuredContent as
+                | { [x: string]: unknown }
+                | undefined,
+        } as CallToolResult
     }
 
     /**
