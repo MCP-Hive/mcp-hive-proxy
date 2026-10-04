@@ -15,7 +15,8 @@ permissions:
 
 jobs:
     build-and-push:
-        runs-on: ubuntu-latest
+        # Native arm64 runner: ECS tasks run on Graviton (linux/arm64)
+        runs-on: ubuntu-24.04-arm
         strategy:
             matrix:
                 environment: [staging, prod]
@@ -40,7 +41,7 @@ jobs:
                   REPOSITORY: ${{ matrix.environment == 'prod' && env.ECR_REPO_PROD || env.ECR_REPO_STAGING }}
                   IMAGE_TAG: ${{ github.sha }}
               run: |
-                  docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
+                  docker build --platform linux/arm64 -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
                   docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
                   docker push $REGISTRY/$REPOSITORY:latest
 
