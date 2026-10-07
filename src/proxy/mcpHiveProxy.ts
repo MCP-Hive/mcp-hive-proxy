@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { ZodHelpers } from './utils/ZodHelpers.ts'
+import { SchemaDialect } from './utils/SchemaDialect.ts'
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
@@ -180,6 +181,9 @@ export class MCPHiveProxy {
         } else {
             throw new Error('Either --server or --gateway must be specified')
         }
+
+        // tools are now registered: drop the draft-07 "$schema" stamp the SDK adds to their schemas
+        SchemaDialect.stripFromToolsList(this.mcpServer)
     }
 
     /**
